@@ -1,0 +1,8 @@
+
+#Error.
+RewriteEngine on
+RewriteBase /
+
+RewriteRule ^v1/([a-zA-Z]+)$ /public/index.php?type=$1
+
+ErrorDocument 404 /public/index.php

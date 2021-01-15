@@ -30,7 +30,7 @@ class mysqlT {
 	public function _db_consulta($sql){
 		
 		$result = $this->link->query($sql);
-		if($result instanceof mysqli_result)
+		if($result instanceof \mysqli_result)
 		{
 				$data = array();
 

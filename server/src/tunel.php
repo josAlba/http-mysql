@@ -1,6 +1,6 @@
 <?php
 
-namespace httpMysql\tunnel;
+namespace httpMysql;
 
 class tunel{
 
@@ -9,12 +9,12 @@ class tunel{
     public function __construct(){
         
         //Conexion con mysql.
-		$this->mysql = new httpMysql\connection\mysqlT(
-            secret::$mysql['host'],
-            secret::$mysql['user'],
-            secret::$mysql['passwd'],
-            secret::$mysql['db'],
-            secret::$mysql['port']
+		$this->mysql = new connect\mysqlT(
+            secrets::$mysql['host'],
+            secrets::$mysql['user'],
+            secrets::$mysql['passwd'],
+            secrets::$mysql['db'],
+            secrets::$mysql['port']
         );
         
     }
@@ -23,24 +23,31 @@ class tunel{
     public function recv(){
 
         //Directorio + prefijo.
-        $prefix = secret::$server['dir'].'/v1/';
+        $prefix = secrets::$server['dir'].'/v1/';
         //Cargamos los elementos del post.
         $post   = $_POST;
         //Cargamos la url.
-        $url    = $_SERVER['REQUEST_URI'];    
+        $url    = $_SERVER['REQUEST_URI']; 
 
-        //Comprobacion de las urls.
-        if( $url == $prefix.'query' ){
+        //Validamos el comando.
+        $q = $this->validateQuery($post);
+        if($q != ''){
 
-            $q = $this->validateQuery($post);
-            if($q != ''){
+            //Comprobacion de las urls.
+            if( $url == $prefix.'query' ){
 
-                $r = $this->mysql->_db_consulta($q);
-                return json_encode($r);
+                return $this->mysql->_db_consulta($q);
+            
+            }else if( $url == $prefix.'insert' ){
+
+                $this->mysql->_db_consulta($q);
+                //Devolvemos el id.
+                return $this->mysql->_ultimo_id();
                 
             }
-
         }
+
+        return array();
 
     }
 
